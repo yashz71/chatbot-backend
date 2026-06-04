@@ -6,18 +6,22 @@ import { firstValueFrom } from 'rxjs';
 import { HttpService } from '@nestjs/axios';
 import { Express } from 'express';
 import FormData from 'form-data';
+import { ConfigService } from '@nestjs/config';
 
 @Injectable()
 export class MessageService {
   private msgRepo: Repository<Message>;
+  private readonly fastApiUrl: any | 'http://127.0.0.1:8000';
 
   constructor(
     @Inject('DATA_SOURCE')
     private dataSource: DataSource,
     private agentService: AgentService,
     private readonly httpService: HttpService,
+    private configService: ConfigService
   ) {
     this.msgRepo = this.dataSource.getRepository(Message);
+    this.fastApiUrl= this.configService.get<string>('FASTAPI_STRING')
   }
 
   async uploadPdf(file: Express.Multer.File, threadId: string) {
@@ -27,7 +31,7 @@ export class MessageService {
     formData.append('thread_id', threadId);
 
     const ingestion = await this.httpService.axiosRef.post(
-      'http://localhost:8000/ingest',
+      `${this.fastApiUrl}/ingest`,
       formData,
       {
         headers: formData.getHeaders(),

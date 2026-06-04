@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { HttpService } from '@nestjs/axios';
 import { Observable } from 'rxjs';
 import FormData from 'form-data';
+import { ConfigService } from '@nestjs/config';
 
 export interface AgentResponse {
   answer: string;
@@ -11,14 +12,18 @@ export interface AgentResponse {
 
 @Injectable()
 export class AgentService {
-  constructor(private readonly httpService: HttpService) {}
+  private readonly fastApiUrl: any | 'http://127.0.0.1:8000';
+  constructor(private readonly httpService: HttpService, private configService: ConfigService) {
+    this.fastApiUrl= this.configService.get<string>('FASTAPI_STRING')
 
+  }
+  
   sendChatWithFile(formData: FormData): Observable<AgentResponse> {
     return new Observable((observer) => {
       let fullResponse = '';
 
       this.httpService.axiosRef
-        .post('http://127.0.0.1:8000/chat', formData, {
+        .post(`${this.fastApiUrl}/chat`, formData, {
           responseType: 'stream',
           timeout: 600000,
           headers: {
@@ -55,7 +60,7 @@ export class AgentService {
       let fullResponse = '';
 
       this.httpService.axiosRef
-        .post('http://127.0.0.1:8000/chat', formData, {
+        .post(`${this.fastApiUrl}/chat`, formData, {
           responseType: 'stream',
           timeout: 600000,
           headers: {
