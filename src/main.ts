@@ -7,7 +7,7 @@ import cookieParser from 'cookie-parser';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.use(cookieParser()); // Enables req.cookies
-  app.enableCors({origin: 'http://localhost:4200', // Your Angular URL
+  app.enableCors({origin: 'http://localhost:4200https://hermesaiagent-cbc4gxebbkhag0ea.francecentral-01.azurewebsites.net', // Your Angular URL
   credentials: true, // Crucial for Cookies
 });
 app.connectMicroservice<MicroserviceOptions>({
